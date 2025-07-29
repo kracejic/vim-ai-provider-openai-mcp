@@ -2,11 +2,11 @@
 
 🚨 **Announcement** 🚨
 
-This is an early version that support only stdio at the moment. It also works only with a fork of vim-ai.
+This is an early version that support only stdio at the moment.
 
 ## Description
 
-This is a provider for [vim-ai](https://github.com/madox2/vim-ai), but at the moment it only works with [my fork](https://github.com/kracejic/vim-ai/) untill we manage to push needed changes upstream.
+This is a provider for [vim-ai](https://github.com/madox2/vim-ai).
 
 This plugin requires mcp library from Anthropic.
 
@@ -17,7 +17,7 @@ pip install mcp --user
 You can add this into vim with bundle:
 
 ```vim
-Plug 'kracejic/vim-ai'
+Plug 'madox2/vim-ai'
 Plug 'kracejic/vim-ai-provider-openai-mcp'
 ```
 
