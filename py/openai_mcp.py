@@ -88,7 +88,7 @@ class OpenAIMCPProvider():
         tool_name = tool_call["function"]["name"]
         tool_args = tool_call["function"]["arguments"]
         tool_args = json.loads(tool_args) if tool_args else {}
-        self.utils.print_debug_threaded(f"Processing tool_call {tool_name} {tool_args}")
+        self.utils.print_debug(f"Processing tool_call {tool_name} {tool_args}")
 
         try:
             result = mcps.call(tool_name, tool_args)
@@ -109,7 +109,7 @@ class OpenAIMCPProvider():
 
     def tools_needing_auth(self, tool_calls):
         tools = set([t["function"]["name"] for t in tool_calls])
-        self.utils.print_debug_threaded(f"USING TOOLS: {tools}")
+        self.utils.print_debug(f"USING TOOLS: {tools}")
 
         if "mcp_dontask" in self.options:
             dontask = set([word.strip() for word in self.options["mcp_dontask"].split(',')])
@@ -137,10 +137,10 @@ class OpenAIMCPProvider():
         mcps = SyncMCPs()
         tools = []
         if "mcp" in self.options:
-            self.utils.print_debug_threaded(f"Loading mcp: {self.options["mcp"]}")
+            self.utils.print_debug(f"Loading mcp: {self.options["mcp"]}")
             mcps.load_cfg(self.options["mcp"])
             tools = mcps.get_tools()
-            self.utils.print_debug_threaded(f"TOOLS: {tools}")
+            self.utils.print_debug(f"TOOLS: {tools}")
 
         # AI LOOP
         shouldContinue = True
@@ -215,7 +215,7 @@ class OpenAIMCPProvider():
             'tools': tools,
             **openai_options
         }
-        self.utils.print_debug_threaded("openai: [{}] request: {}", self.command_type, json.dumps(request))
+        self.utils.print_debug("openai: [{}] request: {}", self.command_type, json.dumps(request))
         url = options['endpoint_url']
         response = self._openai_request(url, request, http_options)
 
@@ -226,7 +226,7 @@ class OpenAIMCPProvider():
             return choices[0].get(_choice_key, {})
 
         def _map_chunk(resp):
-            self.utils.print_debug_threaded("openai: [{}] response: {}", self.command_type, resp)
+            self.utils.print_debug("openai: [{}] response: {}", self.command_type, resp)
             delta = _get_delta(resp)
             if delta.get('reasoning_content'):
                 # NOTE: support for deepseek's reasoning_content
@@ -313,10 +313,10 @@ class OpenAIMCPProvider():
             'response_format': 'b64_json',
         }
         request = { 'prompt': prompt, **openai_options }
-        self.utils.print_debug_threaded("openai: [{}] request: {}", self.command_type, request)
+        self.utils.print_debug("openai: [{}] request: {}", self.command_type, request)
         url = options['endpoint_url']
         response, *_ = self._openai_request(url, request, http_options)
-        self.utils.print_debug_threaded("openai: [{}] response: {}", self.command_type, { 'images_count': len(response['data']) })
+        self.utils.print_debug("openai: [{}] response: {}", self.command_type, { 'images_count': len(response['data']) })
         b64_data = response['data'][0]['b64_json']
         return [{ 'b64_data': b64_data }]
 
@@ -423,11 +423,11 @@ class MCPs(object):
             with open(path, 'r') as f:
                 cfg = json.load(f)
                 for key, tool in cfg.items():
-                    print_debug_threaded(f"MCP loading tool {key}")
+                    print_debug(f"MCP loading tool {key}")
                     await self.add_tool(key, tool)
             return True
         except (FileNotFoundError, json.JSONDecodeError):
-            print_debug_threaded(f"Error: MCP could not open the file {path}")
+            print_debug(f"Error: MCP could not open the file {path}")
             return False
 
     def get_tools(self) -> List:
